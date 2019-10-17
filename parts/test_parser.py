@@ -22,7 +22,20 @@ comp_test_data = [('M=1', '1'),
                   ('A=!A', '!A'),
                   ('M|A;JLT', 'M|A'),
                   ('A=-1', '-1'),
-                  ('D+M;JNE', 'D+M')]
+                  ('D+M;JNE', 'D+M'),
+                  ('M=D', 'D'),
+                  ('A=!A', '!A'),
+                  ('!D;JGE', '!D'),
+                  ('M=D+1', 'D+1'),
+                  ('A+1;JNE', 'A+1'),
+                  ('D=D-1', 'D-1'),
+                  ('M=A-1', 'A-1'),
+                  ('D+A;JEQ', 'D+A'),
+                  ('MD=D-A', 'D-A'),
+                  ('A-D;JEQ', 'A-D'),
+                  ('M=D|A', 'D|A'),
+                  ('M=!M', '!M'),
+                  ('D-M;JGT', 'D-M')]
 
 
 @mark.parametrize('instruction,expected', comp_test_data)

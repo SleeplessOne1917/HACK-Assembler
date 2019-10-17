@@ -66,9 +66,7 @@ class Parser:
         jump_group = f'(?:;({"|".join(jumps)}))'
 
         pattern = f'^{dest_group}?{comp_group}{jump_group}?$'
-        print(pattern)
         groups = match(pattern, c_command).groups()
-        print(groups)
         return groups[group_index]
 
     @staticmethod

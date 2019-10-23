@@ -22,6 +22,8 @@ _comp_group = ('(0|'
 _jump_group = f'(?:;({"|".join(_jumps)}))'
 _c_instr_pat = f'^{_dest_group}?{_comp_group}{_jump_group}?$'
 
+_MAX_CONST_SIZE = 32767
+
 
 class Parser:
     def __init__(self, file):
@@ -47,6 +49,7 @@ class Parser:
     def _set_cmd_type_and_match(self):
         def match_instr(pat):
             return match(pat, self._cur_instr())
+
         def do_set(cmd_type):
             self._cur_instr_type = cmd_type
             self._cur_instr_match = m
@@ -58,6 +61,8 @@ class Parser:
             do_set(C_COMMAND)
         elif m := match_instr(_a_instr_pat):
             do_set(A_COMMAND)
+        elif match_instr(r'^@\-?\d+$'):
+            raise RuntimeError(f'Constant in instruction "{self._cur_instr()}" is out of bounds. Please enter an integer between 0 and {_MAX_CONST_SIZE}.')
         else:
             raise RuntimeError(f'Line {self._cur_instr_index + 1}: invalid instruction: {self._cur_instr()}')
 

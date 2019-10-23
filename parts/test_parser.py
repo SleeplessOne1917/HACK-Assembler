@@ -114,8 +114,6 @@ def test_jump_when_input_is_not_c_instruction_throws(instruction):
 
 c_instrs = [arg[0] for arg in comp_test_data] + [arg[0] for arg in dest_test_data] + [arg[0] for arg in jump_test_data]
 
-#TODO: handle number error '@32768']      # largest supported constant is 32767 because it is the largest 15-bit unsigned integer
-
 
 @mark.parametrize('instruction', c_instrs)
 def test_symbol_when_input_is_c_instruction_throws(instruction):
@@ -147,6 +145,16 @@ invalid_instrs = ['@3symbol',
 def test_parser_fails_when_syntax_is_illegal(instruction):
     with raises(RuntimeError):
         assert setup_parser(instruction)
+
+
+out_of_bounds_numbers = [32768, -1, -12345, 123456789]
+
+
+@mark.parametrize('constant', out_of_bounds_numbers)
+def test_parser_when_constant_out_of_bounds_throws(constant):
+    with raises(RuntimeError) as e:
+        setup_parser(f'@{constant}')
+    assert 'out of bounds' in str(e.value)
 
 
 def setup_parser(instruction):

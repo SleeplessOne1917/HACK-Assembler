@@ -2,18 +2,6 @@ from parts.parser import Parser
 from tempfile import TemporaryFile
 from pytest import mark, raises
 
-invalid_test_data = ['L=1',
-                    'AD=G',
-                    '0;KEK',
-                    'D-FoO;JGE',
-                    'REEEEEEEEEEEEEEEEEEEE',
-                    '42=!D',
-                    'LRFRF|RERF:JLT',
-                    'M|A;JUMP',
-                    'BRUH=-1',
-                    'FOO+BAR;JNE',
-                    'A+D;YEET']
-
 comp_test_data = [('M=1', '1'),
                   ('AD=M', 'M'),
                   ('0;JMP', '0'),
@@ -39,16 +27,9 @@ comp_test_data = [('M=1', '1'),
 
 
 @mark.parametrize('instruction,expected', comp_test_data)
-def test_comp_when_input_is_valid(instruction, expected):
+def test_comp_when_input_is_valid_returns_comp(instruction, expected):
     parser = setup_parser(instruction)
     assert parser.comp() == expected
-
-
-@mark.parametrize('instruction', invalid_test_data)
-def test_when_input_is_invalid_comp_throws(instruction):
-    parser = setup_parser(instruction)
-    with raises(Exception):
-        assert parser.comp()
 
 
 dest_test_data = [('M=1', 'M'),
@@ -63,16 +44,9 @@ dest_test_data = [('M=1', 'M'),
 
 
 @mark.parametrize('instruction,expected', dest_test_data)
-def test_dest_when_input_is_valid(instruction, expected):
+def test_dest_when_input_is_valid_returns_dest(instruction, expected):
     parser = setup_parser(instruction)
     assert parser.dest() == expected
-
-
-@mark.parametrize('instruction', invalid_test_data)
-def test_when_input_is_invalid_dest_throws(instruction):
-    parser = setup_parser(instruction)
-    with raises(Exception):
-        assert parser.dest()
 
 
 jump_test_data = [('M=1', None),
@@ -87,16 +61,92 @@ jump_test_data = [('M=1', None),
 
 
 @mark.parametrize('instruction,expected', jump_test_data)
-def test_jump_when_input_is_valid(instruction, expected):
+def test_jump_when_input_is_valid_returns_jump(instruction, expected):
     parser = setup_parser(instruction)
     assert parser.jump() == expected
 
 
-@mark.parametrize('instruction', invalid_test_data)
-def test_when_input_is_invalid_jump_throws(instruction):
+symbol_test_data = [('@32767', '32767'),
+                    ('@1234', '1234'),
+                    ('@567', '567'),
+                    ('@69', '69'),
+                    ('@7', '7'),
+                    ('@_420', '_420'),
+                    ('@foo:bar', 'foo:bar'),
+                    ('(YeEt$)', 'YeEt$'),
+                    ('@...Kekarino', '...Kekarino'),
+                    ('(B_ruh$:suh.)', 'B_ruh$:suh.'),
+                    ('(SYMBOLTHATACTUALLYFOLLOWSCONVENTION)', 'SYMBOLTHATACTUALLYFOLLOWSCONVENTION'),
+                     ('@1337', '1337'),
+                    ('@symbol', 'symbol'),
+                    ('(symbol)', 'symbol')]
+
+
+@mark.parametrize('instruction,expected', symbol_test_data)
+def test_symbol_when_input_is_valid_returns_symbol(instruction, expected):
+    parser = setup_parser(instruction)
+    assert parser.symbol() == expected
+
+
+non_c_instructions = [arg[0] for arg in symbol_test_data]
+
+
+@mark.parametrize('instruction', non_c_instructions)
+def test_comp_when_input_is_not_c_instruction_throws(instruction):
+    parser = setup_parser(instruction)
+    with raises(Exception):
+        assert parser.comp()
+
+
+@mark.parametrize('instruction', non_c_instructions)
+def test_dest_when_input_is_not_c_instruction_throws(instruction):
+    parser = setup_parser(instruction)
+    with raises(Exception):
+        assert parser.dest()
+
+
+@mark.parametrize('instruction', non_c_instructions)
+def test_jump_when_input_is_not_c_instruction_throws(instruction):
     parser = setup_parser(instruction)
     with raises(Exception):
         assert parser.jump()
+
+
+c_instrs = [arg[0] for arg in comp_test_data] + [arg[0] for arg in dest_test_data] + [arg[0] for arg in jump_test_data]
+
+#TODO: handle number error '@32768']      # largest supported constant is 32767 because it is the largest 15-bit unsigned integer
+
+
+@mark.parametrize('instruction', c_instrs)
+def test_symbol_when_input_is_c_instruction_throws(instruction):
+    parser = setup_parser(instruction)
+    with raises(Exception):
+        assert parser.symbol()
+
+
+invalid_instrs = ['@3symbol',
+                  '@ahoy^^m80',
+                  '(Argg&stuff)',
+                  '(24label)',
+                  'yayayayeet',
+                  '(-POOPER_SCOOPER)',
+                  'L=1',
+                  'AD=G',
+                  '0;KEK',
+                  'D-FoO;JGE',
+                  'REEEEEEEEEEEEEEEEEEEE',
+                  '42=!D',
+                  'LRFRF|RERF:JLT',
+                  'M|A;JUMP',
+                  'BRUH=-1',
+                  'FOO+BAR;JNE',
+                  'A+D;YEET']
+
+
+@mark.parametrize('instruction', invalid_instrs)
+def test_parser_fails_when_syntax_is_illegal(instruction):
+    with raises(RuntimeError):
+        assert setup_parser(instruction)
 
 
 def setup_parser(instruction):

@@ -157,6 +157,17 @@ def test_parser_when_constant_out_of_bounds_throws(constant):
     assert 'out of bounds' in str(e.value)
 
 
+def test_parser_when_lines_contain_comments_and_whitespace_reports_line_number():
+    contents = '''//Lines containing only comments and whitespace
+    
+              
+    //invalid instruction
+    BAD'''
+    with raises(RuntimeError) as e:
+        setup_parser(contents)
+    assert 'Line 5' in str(e.value)
+
+
 def setup_parser(instruction):
     file = TemporaryFile('w+')
     file.write(instruction)

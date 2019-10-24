@@ -1,0 +1,7 @@
+============================= test session starts =============================
+platform win32 -- Python 3.8.0, pytest-5.2.1, py-1.8.0, pluggy-0.13.0
+rootdir: D:\nand2tetris\projects\06\Assembler
+plugins: mock-1.11.1
+collected 0 items
+
+============================ no tests ran in 0.05s ============================

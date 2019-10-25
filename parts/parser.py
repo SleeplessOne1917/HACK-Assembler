@@ -37,6 +37,7 @@ class Parser:
         self._cur_instr_index += 1
         self._set_cmd_type_and_match()
 
+    @property
     def has_more_cmds(self):
         return self._cur_instr_index < len(self._instrs) - 1
 
@@ -44,18 +45,22 @@ class Parser:
     def cmd_type(self):
         return self._cur_instr_type
 
+    @property
     def symbol(self):
         if self._cur_instr_type == C_COMMAND:
             raise RuntimeError(f'Line {self._cur_line}: "{self._cur_instr}" does not have a symbol because it is a C instruction')
         else:
             return self._cur_instr_match.group(1)
 
+    @property
     def dest(self):
         return self._c_cmd(1, "dest")
 
+    @property
     def comp(self):
         return self._c_cmd(4, 'comp')
 
+    @property
     def jump(self):
         return self._c_cmd(5, 'jump')
 

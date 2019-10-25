@@ -14,5 +14,4 @@ dest_test_data = [(None, '000'),
 
 @mark.parametrize('mnemonic,bits', dest_test_data)
 def test_dest_when_mnemonic_has_registers_returns_bits(mnemonic, bits):
-    print(bits)
     assert dest(mnemonic) == BitArray(bin=bits)

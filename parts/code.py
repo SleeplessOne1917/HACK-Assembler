@@ -2,6 +2,4 @@ from bitstring import BitArray
 
 
 def dest(mnemonic):
-    if not mnemonic:
-        return BitArray(bin='000')
-    return BitArray(b'').join([bin(reg in mnemonic) for reg in 'ADM'])
+    return BitArray(b'').join([bin(reg in mnemonic) for reg in 'ADM']) if mnemonic else BitArray(bin='000')

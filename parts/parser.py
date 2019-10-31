@@ -5,7 +5,7 @@ C_COMMAND = 'C_COMMAND'
 L_COMMAND = 'L_COMMAND'
 
 _sym_pat = r'[A-Za-z\$_\.:][A-Za-z\$_\.:\d]*'
-_const_pat = r'0*(?:[1-2][0-9]{4}|3[0-1][0-9]{3}|32[0-6][0-9]{2}|327[0-5][0-9]|3276[0-7]|[0-9]{1,4})'
+_const_pat = r'0*(?:[1-2]\d{4}|3[0-1]\d{3}|32[0-6]\d{2}|327[0-5]\d|3276[0-7]|\d{1,4})'
 _a_instr_pat = f'^@({_sym_pat}|{_const_pat})$'
 _l_instr_pat = fr'^\(({_sym_pat})\)$'
 
